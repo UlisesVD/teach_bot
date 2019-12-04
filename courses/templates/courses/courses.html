@@ -1,0 +1,135 @@
+{% extends 'core/Main.html' %}
+{% block scripts %}
+	{% load static %}
+    <link rel="stylesheet" href="{% static 'courses/css/courses.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.js"></script>
+    <script src="{% static 'courses/js/exam.js' %}"></script>
+{% endblock scripts %}
+{% block title %}
+  TeacBot | Coursos
+{% endblock title %}
+
+{% block content %}
+<div class="courses">
+  {{ msg.message }}
+  <center>
+    {% if request.user.type == 'teacher' %}
+      <button
+      type="button"
+      class="btn btn-warning"
+      data-toggle="modal"
+      data-placement="top"
+      title="Agrega mas curso"
+      data-target="#modalCourse"
+    >
+      Registrar Curso
+    </button>
+    {% endif %}
+    
+  </center>
+  <div class="table-responsive" id="table_courses">
+  <div class="row">
+            {% for course in courses_list %}
+      <div class="col-md-4 mt-2">
+              <div class="card" style="width: 18rem;">
+                <img class="card-img-top" src="..." width="10" height="150" />
+                <div class="card-body">
+                  <div>
+                    <div class="alert alert-warning" role="alert">
+                      <strong>{{ course.name }}</strong>
+                    </div>
+                  </div>
+                  <p class="card-text extensive">{{ course.description }}</p>
+                  <div class="content-line">
+                    <div class="">
+                        <a href="{% url 'courses:unities' course.id course.name|slugify %}"
+                          class="btn btn-primary">Ver curso</a>
+                    </div>
+                    {% if request.user.type == 'student' %}
+                    <div class="">
+                        <a href="{% url 'myCourses:addToFavorites' course.id %}"
+                          class="btn btn-success"><i class="fa fa-bookmark fa-1x mr-1" ></i>Agregar</a>
+                    </div>
+                    {% endif %}
+                    {% if request.user.type == 'teacher' %}
+                    <div class="">
+                        <a class="btn btn-success" title="Editar curso {{ course.name }}" href="{% url 'courses:update_course' course.id %}"><i class="fa fa-pencil-square-o fa-1x" aria-hidden="true"></i></a>
+                    </div>
+                    <div class="">
+                        <form class="" action="{% url 'courses:delete_course'%}" method="post" id="form_delete{{ course.id }}">
+                          {% csrf_token %}
+                          <input type="hidden" name="id_course" value="{{ course.id }}">
+                          <a class="btn btn-danger" onclick="delete_course('{{ course.id }}')" title="ELiminar curso {{ course.name }}" href="#"><i class="fa fa-times fa-1x" aria-hidden="true"></i></a>
+                        </form>
+                    </div>
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+            </div>
+      {% endfor %}
+        </div>
+  </div>
+</div>
+<!-- Modal para el registro de cursos -->
+<div
+  class="modal fade"
+  id="modalCourse"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="Registrar Curso"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle">
+          Registrar Curso
+        </h5>
+        <button
+          type="button"
+          class="close"
+          data-dismiss="modal"
+          aria-label="Close"
+        >
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="col-md-12">
+          <form method="POST">
+            {% csrf_token %}
+            <div class="form-group">
+              <label for="descCourse">Nombre del Curso</label>
+              {{ form.name }}
+            </div>
+            <div class="form-group">
+              <label for="descCourse">Descripción del Curso</label>
+              {{ form.description }}
+            </div>
+            <div class="form-group">
+              <label for="dateEndCourse">Fecha de inicio Curso</label>
+              {{ form.date_start }}
+            </div>
+            <div class="form-group">
+              <label for="dateEndCourse">Fecha de fin Curso</label>
+              {{ form.date_end }}
+            </div>
+            <div class="modal-footer">
+              <button
+                type="reset"
+                class="btn btn-secondary"
+                data-dismiss="modal"
+              >
+                Cancelar
+              </button>
+              <button type="submit" class="btn btn-primary">Guardar</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

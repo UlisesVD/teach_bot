@@ -1,0 +1,76 @@
+{% extends "core/Main.html" %}
+
+{% block scripts %}
+	{% load static %}
+	<script src="{% static 'courses/js/exam.js' %}"></script>
+{% endblock scripts %}
+
+{% block content %}
+{% csrf_token %}
+<div class="container">
+	<div align="center">
+		{% autoescape off %}{{ h1 }}{% endautoescape %}
+		<input type="text" name="title_exam" id="title_exam" value="{{ exam.title }}"  placeholder="Titulo del examen" class="form-control col-6 mt-3">
+		<input type="hidden" name="unity_id" id="unity_id" value="{{ unity_id }}">
+		<label class="label  mt-3" for="date_exam">Fecha de aplicación</label>
+		<input type="date" name="date_exam" id="date_exam" value="{{ exam.date_application|date:'Y-m-d' }}" class="form-control col-5">
+		<div class="row position-sticky">
+			<button class="btn btn-outline-info mt-2 pull-left ml-3 sticky-top " onclick="add_question(true);">Agregar pregunta</button>
+		</div>
+		<br>
+		<div id="list_questions" class="col-6">
+			<input type='hidden' class='form-control mt-2 col-11' value="{{ questions_answers|length }}" id="question_row"/>
+			{%  for question in questions_answers %}
+			<div id='question{{ forloop.counter }}' class='row question' >
+				<input type='text' class='form-control mt-2 col-11' value="{{ question.question }}" placeholder='Agrega tu pregunta'/>
+				<button class='btn btn-danger' onclick="remove_element('question{{ forloop.counter }}');"><span class='fa fa-trash'></span></button>
+				<select data-is_selected="true" class='form-control col-4' id='option{{ forloop.counter }}' onchange='add_answers("{{ forloop.counter}}", true);'>
+					<option value='null'>Tipo de pregunta</option>
+					{%  if question.type == 'open' %}
+					<option value='open' selected>Pregunta abierta</option>
+					<option value='closed'>Seleccion multiple</option>
+					{% else %}
+					<option value='open' >Pregunta abierta</option>
+					<option value='closed' selected>Seleccion multiple</option>
+					{% endif  %}
+				</select>
+				<div class='col-12 mt-3' id='answers{{ forloop.counter }}'>
+					{% with question_row=forloop.counter  %} 
+					{% for answer in question.answers %}		
+						{%  if question.type == 'open' %}
+							<textarea class='form-control' data-is_correct='True'>{{ answer }}</textarea>
+						{% else %}
+						<div class='row mb-3' id='answer{{ forloop.counter }}'>
+							{% if answer.is_correct %}
+								<input type='checkbox' checked id='checkbox{{ question_row }}' class='checkbox{{ question_row }} col-md-1' disabled='True' onchange='check_correct("{{ forloop.counter }}")' />
+							{% else %}
+								<input type='checkbox' id='checkbox{{ question_row }}' class='checkbox{{ question_row }} col-md-1' disabled='True' onchange='check_correct("{{ forloop.counter }}")' />
+							{% endif %}	
+							<input class='form-control col-md-10' data-is_correct='{{ answer.is_correct }}' id='input{{ forloop.counter }}' value="{{ answer }}" type='text'  placeholder='Respuesta'/>
+							<button class='btn btn-danger' onclick='remove_element("answer{{ forloop.counter }}");'><span class='fa fa-remove'></span></button>
+						</div>
+						{% endif  %}
+					{% endfor %}
+					{% endwith %}
+				</div>
+			</div>
+			{% if question.answers|length > 1 %}
+			<div class="row">
+			<button style='display:block;' class='btn btn btn-outline-primary mr-2' id='add_answer{{ forloop.counter }}' onclick='add_answers("{{ forloop.counter }}", false, {{ forloop.counter }})'>Agregar respuesta</button>
+			<button id='btn_select{{ forloop.counter }}' style='display:block;' class='btn btn btn-outline-primary' onclick='enable_checkbox("{{ forloop.counter }}")'>Selecciona respuesta</button>
+			<button id='btn_edit{{ forloop.counter }}' style='display:none;' class='btn btn btn-outline-primary' onclick='edit_answers("{{ forloop.counter }}")'>Editar respuesta</button>
+			</div>
+			{% else %}
+			<button style='display:none;' class='btn btn btn-outline-primary mr-2' id='add_answer{{ forloop.counter }}' onclick='add_answers("{{ forloop.counter }}", false, {{ forloop.counter }})'>Agregar respuesta</button>
+			<button id='btn_select{{ forloop.counter }}' style='display:none;' class='btn btn btn-outline-primary' onclick='enable_checkbox("{{ forloop.counter }}")'>Selecciona respuesta</button>
+			<button id='btn_edit{{ forloop.counter }}' style='display:none;' class='btn btn btn-outline-primary' onclick='edit_answers("{{ forloop.counter }}")'>Editar respuesta</button>
+			{% endif %}
+			{% endfor %}
+		</div>
+
+		<button class="btn btn-outline-success mt-2 " onclick="send_data();">Guardar</button>
+	</div>
+
+</div>
+
+{% endblock content %}

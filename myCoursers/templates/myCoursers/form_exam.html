@@ -1,0 +1,51 @@
+{% extends "core/Main.html" %}
+
+{% block scripts %}
+	{% load static %}
+	<script src="{% static 'courses/js/exam.js' %}"></script>
+{% endblock scripts %}
+
+{% block content %}
+{% csrf_token %}
+<div class="container">
+	<div align="center">
+		{% autoescape off %}{{ h1 }}{% endautoescape %}
+		<input type="text"  id="title_exam" value="{{ exam.title }}"  placeholder="Titulo del examen" class="form-control col-6 mt-3">
+		<input type="hidden"  id="unity_id" value="{{ unity_id }}">
+		<label class="label  mt-3" for="date_exam">Fecha de aplicación</label>
+		<input type="date" id="date_exam" value="{{ exam.date_application|date:'Y-m-d' }}" class="form-control col-5">
+		
+		<br>
+		<div id="list_questions" class="col-6">
+		<form action="{% url 'myCourses:results'%}" method='POST'>
+		{% csrf_token %}
+			<input type='hidden' class='form-control mt-2 col-11' value="{{ questions_answers|length }}" id="question_row"/>
+			{%  for question in questions_answers %}
+			<div id='question{{ forloop.counter }}' class='row question' >
+				<input type='text' class='form-control mt-2 col-11' value="{{ question.question }}" placeholder='Agrega tu pregunta'/>
+				
+				<div class='col-12 mt-3' id='answers{{ forloop.counter }}'>
+					{% with question_row=forloop.counter  %} 
+					{% for answer in question.answers %}		
+						{%  if question.type == 'open' %}
+							<textarea class='form-control' required='' data-is_correct='True' name='{{answer.id}}'></textarea>
+						{% else %}
+						<div class='row mb-3' >
+							<input type='checkbox' value='check' id='checkbox{{ question_row }}' name='{{answer.id}}' class='checkbox{{ question_row }} col-md-1'   />
+							<label>{{answer}}</label>
+						</div>
+						{% endif  %}
+					{% endfor %}
+					{% endwith %}
+				</div>
+			</div>
+			{% endfor %}
+		</div>
+
+		<button class="btn btn-outline-success mt-2 ">Evaluar</button>
+		</form>
+	</div>
+
+</div>
+
+{% endblock content %}

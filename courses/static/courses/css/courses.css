@@ -1,0 +1,6 @@
+.content-line{
+	display: flex;
+}
+.content-line > div{
+	margin-right: 2px;
+}

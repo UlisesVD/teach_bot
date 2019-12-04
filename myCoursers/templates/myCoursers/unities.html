@@ -1,0 +1,104 @@
+{% extends 'core/Main.html' %}
+{% block scripts %}
+	{% load static %}
+    <link rel="stylesheet" href="{% static 'courses/css/courses.css' %}">
+{% endblock scripts %}
+	{% block title %}
+		TeachBot | Coursos/unidades
+	{% endblock title %}
+
+    {% block content %}
+    <div class="courses">
+    	<nav aria-label="breadcrumb">
+		  <ol class="breadcrumb">
+		    <li class="breadcrumb-item"><a href="#">Courses</a></li>
+		    <li class="breadcrumb-item active" aria-current="page">{{ title }}</li>
+		  </ol>
+		</nav>
+    </div>
+    <div>
+    	
+		{% if unities %}
+    	<div class="table-responsive" id="table_courses">
+		  	<div class="row">
+				{% for unity in unities %}
+				<div class="col-md-4 mt-2">
+					<div class="card text-center">
+						<div>
+                          <div class="alert alert-warning" role="alert">
+                            <strong>{{ unity.name }}</strong>
+                          </div>
+                        </div>
+						<div class="card-body">
+							<p class="card-text extensive">{{ unity.description }}</p>
+							<div class="content-line">
+								<div class="">
+									<form class="" action="{% url 'myCourses:exam'%}" method="post" id="form_create_exam{{ unity.id }}">
+									{% csrf_token %}
+									<input type="hidden" name="unity_id" value="{{ unity.id }}">
+									<a class="btn btn-primary" title="Agregar examen a {{ unity.name }}" href="#" onclick="document.forms['form_create_exam{{ unity.id }}'].submit()">Ir al exámen</a>
+									</form>
+								</div>
+							</div>
+						</div>
+						<div class="card-footer text-muted">
+							<b>de</b> {{ unity.date_start|date:"d M, Y" }} <b>a</b> {{ unity.date_end|date:"d M, Y" }}
+						</div>
+					</div>
+				</div>
+
+		  		{% endfor %}
+			</div>
+
+
+		</div>
+		{% else %}
+			<div class="mt-4 text-center">
+				<h4>No cuentas con unidades registradas.</h4>
+			</div>
+		{% endif %}
+
+    </div>
+    <!-- Modal para el registro de unidades al curse -->
+	<div class="modal fade" id="course_unity" tabindex="-1" role="dialog" aria-labelledby="Registrar Unidades" aria-hidden="true">
+	  <div class="modal-dialog modal-dialog-centered" role="document">
+	    <div class="modal-content">
+	      <div class="modal-header">
+	        <h5 class="modal-title" id="exampleModalLongTitle">Registrar Unidad</h5>
+	        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+	          <span aria-hidden="true">&times;</span>
+	        </button>
+	      </div>
+	      <div class="modal-body">
+	        <div class="col-md-12">
+	        	<form method="POST" action=""> {% csrf_token %}
+					<input type="hidden" name="id_course" value="{{id_course}}">
+
+					<div class="form-group">
+					    <label for="nameUnity">Nombre de la unidad</label>
+					    {{ form.name }}
+					</div>
+					<div class="form-group">
+					    <label for="descUnity">Descripción de la unidad</label>
+					    {{ form.description }}
+					</div>
+			  		 <div class="form-group mb-6">
+					    <label for="dateStartUnity">Fecha inicio</label>
+					    {{ form.date_start }}
+					  </div>
+			  		 <div class="form-group mb-6">
+					    <label for="dateEndUnity">Fecha fin</label>
+					    {{ form.date_end }}
+					 </div>
+
+	        </div>
+	      </div>
+	      <div class="modal-footer">
+	        <button type="reset" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+	        <button type="submit" class="btn btn-primary">Guardar</button>
+	      </div>
+		  </form>
+	    </div>
+	  </div>
+	</div>
+    {% endblock %}

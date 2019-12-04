@@ -1,0 +1,23 @@
+{% extends 'core/Main.html' %}
+{% block scripts %}
+	{% load static %}
+    <link rel="stylesheet" href="{% static 'courses/css/courses.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.js"></script>
+    <script src="{% static 'courses/js/exam.js' %}"></script>
+{% endblock scripts %}
+{% block title %}
+  TeacBot | Coursos
+{% endblock title %}
+
+{% block content %}
+<h1>Resultados:</h1>
+<h4>Calificación Total:{{total_calif}}</h4>
+{%for i in data%}
+    <b>{{i.question }}</b></br>
+    <span><b>Respuesta Correcta:</b>{{i.teacher_answer}}</span></br>
+    <span><b>Respesta Otorgada:</b>{{i.student_answer}}</span></br>
+    <span><b>Calif. Parcial:</b>{{i.qualification}}</span></br></br>
+{%endfor%}
+
+{% endblock %}

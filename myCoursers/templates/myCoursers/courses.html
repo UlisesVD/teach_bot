@@ -1,0 +1,43 @@
+{% extends 'core/Main.html' %}
+{% block scripts %}
+	{% load static %}
+    <link rel="stylesheet" href="{% static 'courses/css/courses.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.js"></script>
+    <script src="{% static 'courses/js/exam.js' %}"></script>
+{% endblock scripts %}
+{% block title %}
+  TeacBot | Coursos
+{% endblock title %}
+
+{% block content %}
+<div class="courses">
+  
+  <div class="table-responsive" id="table_courses">
+  <div class="row">
+            {% for myCourse in courses_list %}
+      <div class="col-md-4 mt-2">
+              <div class="card" style="width: 18rem;">
+                <img class="card-img-top" src="..." width="10" height="150" />
+                <div class="card-body">
+                  <div>
+                    <div class="alert alert-warning" role="alert">
+                      <strong>{{ myCourse.id_course }}</strong>
+                    </div>
+                  </div>
+                  <p class="card-text extensive">{{ myCourse.id_course.description }}</p>
+                  <div class="content-line">
+                    <div class="">
+                        <a href="{% url 'myCourses:unities' myCourse.id_course.id myCourse.id_course.name|slugify %}"
+                          class="btn btn-primary">Ver curso</a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+      {% endfor %}
+        </div>
+  </div>
+</div>
+
+{% endblock %}
